@@ -2,7 +2,9 @@
 
 import GoogleIcon from "@/component/googleIcon";
 import Field from "@/component/inputField";
+import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 type FormErrors = Partial<Record<"email" | "password", string>>;
@@ -12,6 +14,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const router = useRouter();
 
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,14 +45,23 @@ export default function LoginPage() {
       email: form.email,
       password: form.password,
     };
-    console.log(loginPayload);
+
     try {
-      // Wire this up to your actual login endpoint.
-      // await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email: form.email, password: form.password, rememberMe }),
-      // });
+      const url = process.env.NEXT_PUBLIC_SERVER_API_URL + "/api/v1/auth/login";
+      const response = await axios({
+        method: "POST",
+        url: url,
+        data: loginPayload,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      if (response?.data?.success) {
+        localStorage.setItem("token", response?.data?.data?.accessToken);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response?.data?.data?.data),
+        );
+        router.push("/");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -74,6 +86,7 @@ export default function LoginPage() {
               alt="Login illustration"
               width={500}
               height={500}
+              loading="eager"
               className="object-contain"
             />
           </div>
