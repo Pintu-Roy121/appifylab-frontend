@@ -1,6 +1,6 @@
-import AllNewsFeed from "../newFeed/allNewsFeed";
-import FeedSlider from "../newFeed/feedSlider";
-import PostSection from "../newFeed/postSection";
+import AllNewsFeed from "../newsFeed/allNewsFeed";
+import FeedSlider from "../newsFeed/feedSlider";
+import PostSection from "../newsFeed/postSection";
 
 const FeedSection = () => {
   return (

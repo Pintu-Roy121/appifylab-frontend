@@ -1,11 +1,31 @@
-export interface IPosts {
+export interface Post {
   _id: string;
-  author: string;
+  author: IAuthor;
   text: string;
   image: string;
   visibility: string;
-  likeCount: string;
-  commentCount: string;
-  createdAt: string;
-  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IAuthor {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface IPostLike {
+  _id: string;
+  user: IUser;
+  post: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUser {
+  _id: string;
+  email: string;
 }

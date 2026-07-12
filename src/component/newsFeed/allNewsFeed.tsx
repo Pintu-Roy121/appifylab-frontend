@@ -1,8 +1,7 @@
-import { IPosts } from "@/interfaces/interface";
-import { timeAgo } from "@/utils/timeAgo";
+import { Post } from "@/interfaces/interface";
 import axios from "axios";
 import { cookies } from "next/headers";
-import PostCard from "./postCard";
+import { PostCard } from "./postCard";
 
 async function getPosts() {
   const token = (await cookies()).get("token")?.value;
@@ -23,16 +22,9 @@ const AllNewsFeed = async () => {
   const { data: posts } = await getPosts();
   return (
     <div className="flex flex-col gap-5">
-      {posts?.data.map((post: IPosts) => (
+      {posts?.data.map((post: Post) => (
         <div key={post._id}>
-          <PostCard
-            authorName="Karim Saif"
-            authorAvatarUrl="./images/txt_img.png"
-            timeAgo={timeAgo(post.createdAt)}
-            visibility={post?.visibility === "PUBLIC" ? "Public" : "Private"}
-            text={post?.text}
-            imageUrl={post?.image ?? "./images/recommend4.png"}
-          />
+          <PostCard post={post} />
         </div>
       ))}
     </div>
