@@ -1,9 +1,11 @@
 "use client";
 
-import GoogleIcon from "@/component/googleIcon";
-import Field from "@/component/inputField";
+import GoogleIcon from "@/utils/googleIcon";
+import Field from "@/utils/inputField";
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 type FormErrors = Partial<
@@ -29,6 +31,8 @@ export default function RegisterPage() {
   const [agreed, setAgreed] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+
+  const router = useRouter();
 
   const handleChange =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,21 +81,30 @@ export default function RegisterPage() {
       email: form.email,
       password: form.password,
     };
-    console.log(payload);
     try {
-      // Wire this up to your actual registration endpoint.
-      // await fetch("/api/auth/register", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email: form.email, password: form.password }),
-      // });
+      const url =
+        process.env.NEXT_PUBLIC_SERVER_API_URL + "/api/v1/user/register";
+      const response = await axios({
+        method: "POST",
+        url: url,
+        data: payload,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      if (response?.data?.success) {
+        localStorage.setItem("token", response?.data?.data?.accessToken);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response?.data?.data?.data),
+        );
+        router.push("/login");
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#F2F3F7]">
+    <div className="relative min-h-screen overflow-x-hidden overflow-y-scroll bg-[#F2F3F7]">
       {/* Top edge bar */}
       <div className="absolute inset-x-0 top-0 h-[6px] bg-[#101828]" />
 

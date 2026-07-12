@@ -1,7 +1,7 @@
 "use client";
 
-import GoogleIcon from "@/component/googleIcon";
-import Field from "@/component/inputField";
+import GoogleIcon from "@/utils/googleIcon";
+import Field from "@/utils/inputField";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -55,6 +55,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       if (response?.data?.success) {
+        document.cookie = `token=${response?.data?.data?.accessToken}; path=/; max-age=604800`;
         localStorage.setItem("token", response?.data?.data?.accessToken);
         localStorage.setItem(
           "user",
@@ -68,7 +69,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#F2F3F7]">
+    <div className="relative min-h-screen overflow-x-hidden overflow-y-scroll bg-[#F2F3F7]">
       {/* Top edge bar */}
       <div className="absolute inset-x-0 top-0 h-[6px] bg-[#101828]" />
 

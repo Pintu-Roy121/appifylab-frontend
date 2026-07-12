@@ -14,10 +14,25 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (!token) {
       router.push("/login");
     } else {
       setChecked(true);
+    }
+
+    if (!token || token === "undefined" || token === "null") {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      if (!token || token === "undefined" || token === "null") {
+        router.push("/login");
+        return;
+      }
+    } catch {
+      router.push("/login");
     }
   }, [router]);
 
