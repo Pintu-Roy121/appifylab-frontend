@@ -17,6 +17,17 @@ export interface IAuthor {
   email: string;
 }
 
+export interface IComment {
+  _id: string;
+  user: IUser;
+  post: string;
+  text: string;
+  likeCount: number;
+  replyCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface IPostLike {
   _id: string;
   user: IUser;
@@ -27,5 +38,8 @@ export interface IPostLike {
 
 export interface IUser {
   _id: string;
-  email: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  createdAt?: string;
 }

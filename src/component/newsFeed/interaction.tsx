@@ -2,7 +2,7 @@
 
 import useGet from "@/api/useGet";
 import usePost from "@/api/usePost";
-import { IPostLike, Post } from "@/interfaces/interface";
+import { IComment, IPostLike, Post } from "@/interfaces/interface";
 import { FormEvent, useEffect, useState } from "react";
 import { BsMic } from "react-icons/bs";
 import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
@@ -10,13 +10,15 @@ import { ImImage } from "react-icons/im";
 import { IoSendSharp } from "react-icons/io5";
 import { LuMessageCircleMore } from "react-icons/lu";
 import { PiShareFat } from "react-icons/pi";
-import { LikerAvatarStack } from "./likeAvatars";
+import CommentSection from "./createComments/comments";
+import { LikerAvatarStack } from "./createLike/likeCreate";
 
 export interface EngagementBarProps {
   commentCount?: number;
   likeCount?: number;
   shareCount?: number;
   post: Post;
+  onComment?: () => void;
 }
 
 export default function EngagementBar({
@@ -24,14 +26,19 @@ export default function EngagementBar({
   likeCount,
   shareCount,
   post,
+  onComment,
 }: EngagementBarProps) {
   const [reacted, setReacted] = useState(false);
   const [text, setText] = useState("");
   const [postId, setPostId] = useState("");
+  const [commentPostId, setCommentPostId] = useState("");
+  const [postComment, setPostComment] = useState<IComment[]>([]);
   const [postLikes, setPostLikes] = useState<IPostLike[]>([]);
   const canSend = text.trim().length > 0;
   const [localExtraLikers, setLocalExtraLikers] = useState({});
   const currentUser = JSON.parse(localStorage.getItem("user") ?? "null");
+  const [replyingTo, setReplyingTo] = useState("");
+
   const currentUserId = currentUser?._id;
 
   const {
@@ -51,21 +58,52 @@ export default function EngagementBar({
     triggerPostLike();
   }, [postId]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const { data: comments, refetch: triggerPostComment } = useGet<any>(
+    `/api/v1/comment/${post?._id}`,
+  );
+
+  useEffect(() => {
+    if (data?.success) {
+      setPostComment(comments?.data);
+    }
+  }, [comments]);
+
+  useEffect(() => {
+    triggerPostComment();
+  }, [commentPostId]);
+
+  const { trigger: createCommentTrigger } = usePost<any, any>(
+    "/api/v1/comment/create",
+  );
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setCommentPostId(post?._id);
     if (!canSend) return;
+    const payload = {
+      text: text,
+      post: post._id,
+    };
+    try {
+      const response = await createCommentTrigger(payload);
+      if (response.success) {
+        setCommentPostId("");
+        setLocalExtraLikers(response?.data?.postLike);
+      }
+    } catch {}
 
     setText("");
   };
 
-  const { trigger } = usePost<any, any>("/api/v1/post-like/create");
+  const { trigger: createLikeTrigger } = usePost<any, any>(
+    "/api/v1/post-like/create",
+  );
 
   const handleLikeClick = async () => {
     setPostId(post?._id);
     const wasReacted = reacted;
     setReacted(!wasReacted);
     try {
-      const response = await trigger({ post: post._id });
+      const response = await createLikeTrigger({ post: post._id });
       if (response.success) {
         setPostId("");
         setLocalExtraLikers(response?.data?.postLike);
@@ -92,16 +130,15 @@ export default function EngagementBar({
 
         <div className="flex items-center gap-4">
           <span className="font-medium text-black text-lg">
-            {commentCount} <span className="text-slate-400">Comment</span>
+            {postComment?.length}{" "}
+            <span className="text-slate-400">Comment</span>
           </span>
           <span className="font-medium text-black text-lg">
             {shareCount} <span className="text-slate-400">Share</span>
           </span>
         </div>
       </div>
-
       <div className="border-t border-slate-100" />
-
       {/* actions */}
       <div className="flex items-center px-2 py-1.5">
         <button
@@ -123,7 +160,10 @@ export default function EngagementBar({
 
         <button
           type="button"
-          // onClick={onComment}
+          onClick={() => {
+            document.getElementById(`comment-input-${post._id}`)?.focus();
+            onComment?.();
+          }}
           className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-50"
         >
           <LuMessageCircleMore className="text-2xl text-gray-500" />
@@ -154,7 +194,10 @@ export default function EngagementBar({
           <input
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            id={`comment-input-${post._id}`}
+            onChange={(e) => {
+              setText(e.target.value);
+            }}
             placeholder="Write a comment"
             className="w-full flex-1 bg-transparent text-sm text-slate-600 outline-none placeholder:text-slate-400"
           />
@@ -190,6 +233,15 @@ export default function EngagementBar({
           {/* )} */}
         </form>
       </div>
+      {postComment?.length > 0 && (
+        <CommentSection
+          comments={postComment}
+          currentUserAvatarUrl={currentUser.avatarUrl}
+          // onLike={(id) => toggleCommentLike(id)}
+          onSubmitReply={(id) => setReplyingTo(id)}
+          // onSubmitComment={(text) => addComment(text)}
+        />
+      )}
     </div>
   );
 }
