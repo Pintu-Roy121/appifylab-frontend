@@ -3,21 +3,29 @@ import useGet from "@/api/useGet";
 import usePost from "@/api/usePost";
 import { IComment } from "@/interfaces/interface";
 import { timeAgo } from "@/utils/timeAgo";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { AiFillHeart, AiFillLike } from "react-icons/ai";
 import { ReplyComposer } from "./createReply";
 
 export function CommentLikeSection({
   comment,
+  setCommentPostId,
   image,
   isReplying,
   onToggleReply,
   onShare,
   onSubmitReply,
+  getLikeUrl,
+  createLikeUrl,
+  payloadKey,
 }: {
   comment: IComment;
+  setCommentPostId: Dispatch<SetStateAction<string>>;
   image?: string;
   isReplying?: boolean;
+  getLikeUrl: string;
+  payloadKey: "comment" | "reply";
+  createLikeUrl: string;
   onToggleReply: () => void;
   onShare?: (commentId: string) => void;
   onSubmitReply: (text: string) => void;
@@ -34,12 +42,9 @@ export function CommentLikeSection({
   }, []);
 
   const { data: commentLikeData, refetch: triggerFetchLikes } = useGet<any>(
-    `/api/v1/comment-like/${comment._id}`,
+    `${getLikeUrl}/${comment._id}`,
   );
-
-  const { trigger: createLikeTrigger } = usePost<any, any>(
-    "/api/v1/comment-like/create",
-  );
+  const { trigger: createLikeTrigger } = usePost<any, any>(createLikeUrl);
 
   useEffect(() => {
     if (commentLikeData?.success && commentLikeData?.data) {
@@ -59,7 +64,7 @@ export function CommentLikeSection({
 
   const handleLike = async () => {
     try {
-      const response = await createLikeTrigger({ comment: comment._id });
+      const response = await createLikeTrigger({ [payloadKey]: comment._id });
       if (response?.success) {
         setIsLiked(response?.data?.liked);
         // setLikeCount((prev) => prev + 1);
@@ -108,6 +113,7 @@ export function CommentLikeSection({
       const response = await createCommentReplyTrigger(payload);
       if (response.success) {
         setCommentId(comment._id);
+        setCommentPostId(comment.post as string);
         // onToggleReply();
       }
     } catch (err) {
@@ -144,6 +150,7 @@ export function CommentLikeSection({
         </div>
 
         <div className="mt-2 flex items-center gap-1.5 text-xs">
+          {/* Like button */}
           <button
             type="button"
             onClick={handleLike}
@@ -154,6 +161,8 @@ export function CommentLikeSection({
             {isLiked ? "Unlike" : "Like"}
           </button>
           <span className="text-slate-300">.</span>
+
+          {/* Reply button */}
           <button
             type="button"
             onClick={onToggleReply}
@@ -164,6 +173,8 @@ export function CommentLikeSection({
             Reply
           </button>
           <span className="text-slate-300">.</span>
+
+          {/* Share button */}
           <button
             type="button"
             onClick={() => onShare?.(comment._id)}
@@ -174,14 +185,16 @@ export function CommentLikeSection({
           <span className="text-slate-300">.</span>
           <span className="text-slate-400">{timeAgo(comment?.createdAt)}</span>
         </div>
+
+        {/* Reply field show */}
         {isReplying && (
           <ReplyComposer
-            // onSubmit={onSubmitReply}
             onSubmit={handleCommentReply}
             onCancel={onToggleReply}
             comment={comment}
           />
         )}
+
         {/* Comment Reply show */}
         <div className="mt-2">
           {previousCommentsRepliesCount > 0 && (
@@ -199,10 +212,14 @@ export function CommentLikeSection({
             {visibleCommentReplies.map((reply: any) => (
               <CommentLikeSection
                 key={reply._id}
+                setCommentPostId={setCommentPostId}
                 image="./images/comment_img.png"
                 comment={reply}
                 onToggleReply={() => {}}
                 onSubmitReply={(replyText) => {}}
+                getLikeUrl="/api/v1/reply-like"
+                createLikeUrl="/api/v1/reply-like/create" // payload = {reply:"6a527c5c723e0a51f7465e58" = reply._id}
+                payloadKey="reply"
               />
             ))}
           </div>

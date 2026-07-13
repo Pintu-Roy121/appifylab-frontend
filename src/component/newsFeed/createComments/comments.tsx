@@ -1,7 +1,7 @@
 "use client";
 
 import { IComment } from "@/interfaces/interface";
-import { FormEvent, useState } from "react";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { BsMic } from "react-icons/bs";
 import { ImImage } from "react-icons/im";
 import { IoSendSharp } from "react-icons/io5";
@@ -18,12 +18,14 @@ export interface CommentData {
 
 export default function CommentSection({
   comments,
+  setCommentPostId,
   onLoadPrevious,
   onShare,
   onSubmitComment,
   onSubmitReply,
 }: {
   comments: IComment[];
+  setCommentPostId: Dispatch<SetStateAction<string>>;
   onLoadPrevious?: () => void;
   onLike?: (commentId: string) => void;
   onShare?: (commentId: string) => void;
@@ -64,6 +66,7 @@ export default function CommentSection({
         {visibleComments.map((comment) => (
           <CommentLikeSection
             key={comment._id}
+            setCommentPostId={setCommentPostId}
             comment={comment}
             isReplying={replyingToId === comment._id}
             onToggleReply={() =>
@@ -76,6 +79,9 @@ export default function CommentSection({
               onSubmitReply(comment._id, replyText);
               setReplyingToId(null);
             }}
+            getLikeUrl="/api/v1/comment-like"
+            createLikeUrl="/api/v1/comment-like/create" // payload = {comment:"6a527c5c723e0a51f7465e58" = comment._id}
+            payloadKey="comment"
           />
         ))}
       </div>

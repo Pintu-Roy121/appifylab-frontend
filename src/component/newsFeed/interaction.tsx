@@ -93,7 +93,6 @@ export default function EngagementBar({
     setText("");
   };
   const addComment = async (txt: string) => {
-    console.log(txt);
     setCommentPostId(post?._id);
     const payload = {
       text: txt,
@@ -103,6 +102,7 @@ export default function EngagementBar({
       const response = await createCommentTrigger(payload);
       if (response.success) {
         setCommentPostId("");
+        setLocalExtraLikers(response?.data?.postLike);
       }
     } catch {}
 
@@ -133,6 +133,11 @@ export default function EngagementBar({
     (like) => like.user._id === currentUserId,
   );
 
+  const totalComments = postComment.reduce(
+    (total, comment) => total + comment.replyCount,
+    0,
+  );
+
   return (
     <div className="w-full">
       {/* avatars + counts */}
@@ -145,8 +150,11 @@ export default function EngagementBar({
 
         <div className="flex items-center gap-4">
           <span className="font-medium text-black text-lg">
-            {postComment?.length}{" "}
-            <span className="text-slate-400">Comment</span>
+            {/* {postComment?.length}{" "} */}
+            {totalComments}{" "}
+            <span className="text-slate-400">
+              {totalComments > 1 ? "Comments" : "Comment"}
+            </span>
           </span>
           <span className="font-medium text-black text-lg">
             {shareCount} <span className="text-slate-400">Share</span>
@@ -251,6 +259,7 @@ export default function EngagementBar({
       {postComment?.length > 0 && (
         <CommentSection
           comments={postComment}
+          setCommentPostId={setCommentPostId}
           // currentUserAvatarUrl={currentUser.avatarUrl}
           // onLike={(id) => toggleCommentLike(id)}
           onSubmitReply={(id) => setReplyingTo(id)}
