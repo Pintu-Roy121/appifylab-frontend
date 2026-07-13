@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [error, setError] = useState<string>("");
   const router = useRouter();
 
   const handleChange =
@@ -47,21 +48,27 @@ export default function LoginPage() {
     };
 
     try {
-      const url = process.env.NEXT_PUBLIC_SERVER_API_URL + "/api/v1/auth/login";
       const response = await axios({
         method: "POST",
-        url: url,
+        url: `${process.env.NEXT_PUBLIC_SERVER_API_URL}/api/v1/auth/login`,
         data: loginPayload,
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       });
-      if (response?.data?.success) {
-        document.cookie = `token=${response?.data?.data?.accessToken}; path=/; max-age=604800`;
-        localStorage.setItem("token", response?.data?.data?.accessToken);
-        localStorage.setItem(
-          "user",
-          JSON.stringify(response?.data?.data?.data),
-        );
+
+      if (response.data.success) {
+        document.cookie = `token=${response.data.data.accessToken}; path=/; max-age=604800`;
+        localStorage.setItem("token", response.data.data.accessToken);
+        localStorage.setItem("user", JSON.stringify(response.data.data.data));
         router.push("/");
+        setSubmitting(false);
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message);
+      } else {
+        setError("Invalid Credential!");
       }
     } finally {
       setSubmitting(false);
@@ -148,7 +155,11 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 error={errors.password}
               />
-
+              {error && (
+                <p className="mt-1 text-[12px] font-medium text-red-600">
+                  {error}
+                </p>
+              )}
               <div className="flex items-center justify-between pt-1">
                 <label className="flex items-center gap-2 text-[13px] text-slate-600">
                   <input

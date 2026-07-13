@@ -12,6 +12,7 @@ const PostSection = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [privacy, setPrivacy] = useState<"PUBLIC" | "PRIVATE">("PUBLIC");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -42,13 +43,10 @@ const PostSection = () => {
     if (!canPost) return;
 
     const formData = new FormData();
-    formData.append("data", JSON.stringify({ text }));
+    formData.append("data", JSON.stringify({ text, visibility: privacy }));
     if (imageFile) {
       formData.append("file", imageFile);
     }
-
-    // onSubmit?.({ text, imageFile });
-    // /api/v1/post/create
 
     try {
       const token = localStorage.getItem("token");
@@ -71,7 +69,6 @@ const PostSection = () => {
       setText("");
       removeImage();
     }
-    // reset after posting
   };
   return (
     <div className="bg-white p-5 rounded-lg">
@@ -103,6 +100,31 @@ const PostSection = () => {
               </div>
             )}
           </div>
+        </div>
+        <div className="flex items-center gap-6">
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="privacy"
+              value="PUBLIC"
+              checked={privacy === "PUBLIC"}
+              onChange={(e) => setPrivacy(e.target.value as "PUBLIC")}
+              className="h-5 w-5 accent-blue-600"
+            />
+            <span className="font-medium">Public</span>
+          </label>
+
+          <label className="flex cursor-pointer items-center gap-2">
+            <input
+              type="radio"
+              name="privacy"
+              value="PRIVATE"
+              checked={privacy === "PRIVATE"}
+              onChange={(e) => setPrivacy(e.target.value as "PRIVATE")}
+              className="h-5 w-5 accent-blue-600"
+            />
+            <span className="font-medium">Private</span>
+          </label>
         </div>
 
         {imagePreview && (
@@ -170,10 +192,10 @@ const PostSection = () => {
           <button
             type="submit"
             disabled={!canPost}
-            className="flex items-center gap-1.5 rounded-lg bg-[#4A6CF7] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#3B5CE0] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex justify-center items-center gap-2 rounded-lg bg-[#4A6CF7] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#3B5CE0] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <BiSend className="h-3.5 w-3.5" />
-            Post
+            <BiSend className="text-xl" />
+            {submitting ? "Posting ..." : "Post"}
           </button>
         </div>
       </form>

@@ -133,10 +133,11 @@ export default function EngagementBar({
     (like) => like.user._id === currentUserId,
   );
 
-  const totalComments = postComment.reduce(
-    (total, comment) => total + comment.replyCount,
-    0,
-  );
+  const getTotalCount = (comments: IComment[]) =>
+    comments.length +
+    comments.reduce((sum, comment) => sum + (comment.replyCount ?? 0), 0);
+
+  const total = getTotalCount(postComment);
 
   return (
     <div className="w-full">
@@ -151,9 +152,9 @@ export default function EngagementBar({
         <div className="flex items-center gap-4">
           <span className="font-medium text-black text-lg">
             {/* {postComment?.length}{" "} */}
-            {totalComments}{" "}
+            {total}{" "}
             <span className="text-slate-400">
-              {totalComments > 1 ? "Comments" : "Comment"}
+              {total > 1 ? "Comments" : "Comment"}
             </span>
           </span>
           <span className="font-medium text-black text-lg">

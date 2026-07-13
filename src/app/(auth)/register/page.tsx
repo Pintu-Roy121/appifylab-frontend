@@ -31,6 +31,7 @@ export default function RegisterPage() {
   const [agreed, setAgreed] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [error, setError] = useState<string>("");
 
   const router = useRouter();
 
@@ -98,10 +99,18 @@ export default function RegisterPage() {
         );
         router.push("/login");
       }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message);
+      } else {
+        setError("Invalid Credential!");
+      }
     } finally {
       setSubmitting(false);
     }
   };
+
+  // <FcGoogle />
 
   return (
     <div className="relative min-h-screen overflow-x-hidden overflow-y-scroll bg-[#F2F3F7]">
@@ -217,7 +226,11 @@ export default function RegisterPage() {
                 required
                 error={errors.repeatPassword}
               />
-
+              {error && (
+                <p className="mt-1 text-[12px] font-medium text-red-600">
+                  {error}
+                </p>
+              )}
               <div>
                 <label className="flex items-center gap-2 pt-1 text-[13px] text-slate-600">
                   <input
@@ -238,7 +251,6 @@ export default function RegisterPage() {
                   </p>
                 )}
               </div>
-
               <button
                 type="submit"
                 disabled={submitting}
