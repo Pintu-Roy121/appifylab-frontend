@@ -43,3 +43,11 @@ export interface IUser {
   lastName?: string;
   createdAt?: string;
 }
+
+export interface IComments {
+  _id: string;
+  user: IUser;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}

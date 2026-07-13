@@ -16,13 +16,8 @@ export function LikerAvatarStack({
   if (postLikes.length === 0) {
     return (
       <div className="flex items-center">
-        {/* <img
-          src={DEMO_AVATAR}
-          alt="No likes yet"
-          className="h-10 w-10 rounded-full border-2 border-white object-cover"
-        /> */}
         <span className="font-medium text-black text-lg">
-          {likeCount} <span className="text-slate-400">Like</span>
+          {visibleLikes?.length} <span className="text-slate-400">Like</span>
         </span>
       </div>
     );

@@ -36,9 +36,8 @@ export default function EngagementBar({
   const [postLikes, setPostLikes] = useState<IPostLike[]>([]);
   const canSend = text.trim().length > 0;
   const [localExtraLikers, setLocalExtraLikers] = useState({});
-  const currentUser = JSON.parse(localStorage.getItem("user") ?? "null");
   const [replyingTo, setReplyingTo] = useState("");
-
+  const currentUser = JSON.parse(localStorage.getItem("user") ?? "null");
   const currentUserId = currentUser?._id;
 
   const {
@@ -92,6 +91,22 @@ export default function EngagementBar({
     } catch {}
 
     setText("");
+  };
+  const addComment = async (txt: string) => {
+    console.log(txt);
+    setCommentPostId(post?._id);
+    const payload = {
+      text: txt,
+      post: post._id,
+    };
+    try {
+      const response = await createCommentTrigger(payload);
+      if (response.success) {
+        setCommentPostId("");
+      }
+    } catch {}
+
+    // setText("");
   };
 
   const { trigger: createLikeTrigger } = usePost<any, any>(
@@ -150,12 +165,12 @@ export default function EngagementBar({
               : "text-gray-500 hover:text-blue-800 hover:bg-slate-50"
           }`}
         >
-          {reacted || isLikedByViewer ? (
+          {isLikedByViewer ? (
             <FaThumbsUp className="text-xl mb-2 text-blue-950 cursor-pointer" />
           ) : (
             <FaRegThumbsUp className="text-xl mb-2 cursor-pointer" />
           )}
-          {reacted || isLikedByViewer ? <span>Liked</span> : <span>Like</span>}
+          {isLikedByViewer ? <span>Liked</span> : <span>Like</span>}
         </button>
 
         <button
@@ -186,7 +201,7 @@ export default function EngagementBar({
           className="flex w-full justify-center items-center gap-2 rounded-full bg-gray-100 p-2"
         >
           <img
-            src="./images/react_img1.png"
+            src="/images/img11.png"
             alt="img"
             className="h-7 w-7 shrink-0 rounded-full object-cover"
           />
@@ -198,7 +213,7 @@ export default function EngagementBar({
             onChange={(e) => {
               setText(e.target.value);
             }}
-            placeholder="Write a comment"
+            placeholder="Write a comment..."
             className="w-full flex-1 bg-transparent text-sm text-slate-600 outline-none placeholder:text-slate-400"
           />
 
@@ -236,10 +251,10 @@ export default function EngagementBar({
       {postComment?.length > 0 && (
         <CommentSection
           comments={postComment}
-          currentUserAvatarUrl={currentUser.avatarUrl}
+          // currentUserAvatarUrl={currentUser.avatarUrl}
           // onLike={(id) => toggleCommentLike(id)}
           onSubmitReply={(id) => setReplyingTo(id)}
-          // onSubmitComment={(text) => addComment(text)}
+          onSubmitComment={(txt) => addComment(txt)}
         />
       )}
     </div>
