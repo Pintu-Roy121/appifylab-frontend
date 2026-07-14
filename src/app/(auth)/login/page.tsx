@@ -1,11 +1,12 @@
 "use client";
 
-import GoogleIcon from "@/utils/googleIcon";
 import Field from "@/utils/inputField";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { toast, ToastContainer } from "react-toastify";
 
 type FormErrors = Partial<Record<"email" | "password", string>>;
 
@@ -58,6 +59,7 @@ export default function LoginPage() {
       });
 
       if (response.data.success) {
+        toast.success("Login Successful!");
         document.cookie = `token=${response.data.data.accessToken}; path=/; max-age=604800`;
         localStorage.setItem("token", response.data.data.accessToken);
         localStorage.setItem("user", JSON.stringify(response.data.data.data));
@@ -66,6 +68,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message);
         setError(err.response?.data?.message);
       } else {
         setError("Invalid Credential!");
@@ -77,6 +80,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden overflow-y-scroll bg-[#F2F3F7]">
+      <ToastContainer position="top-right" />
       {/* Top edge bar */}
       <div className="absolute inset-x-0 top-0 h-[6px] bg-[#101828]" />
 
@@ -122,7 +126,7 @@ export default function LoginPage() {
               type="button"
               className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              <GoogleIcon />
+              <FcGoogle className="text-xl" />
               SignIn with google
             </button>
 

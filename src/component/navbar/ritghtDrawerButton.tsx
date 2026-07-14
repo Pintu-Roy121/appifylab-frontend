@@ -1,4 +1,29 @@
-import { BiSearch } from "react-icons/bi";
+"use client";
+
+import { useState } from "react";
+import { BiMenu, BiSearch } from "react-icons/bi";
+import Drawer from "../homePage/drawer";
+
+export default function RightDrawerButton() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setOpen(true)}>
+        <BiMenu className="text-2xl text-blue-500 mt-1 cursor-pointer block lg:hidden" />
+      </button>
+
+      <Drawer
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        className={`fixed right-0 top-0 z-50 h-screen w-80 bg-white shadow-2xl transition-transform duration-300 ease-in-out
+${open ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <RightSidebar />
+      </Drawer>
+    </div>
+  );
+}
 
 const friendsData = [
   {
@@ -60,7 +85,7 @@ const friendsData = [
 ];
 const RightSidebar = () => {
   return (
-    <div className="col-span-3 hidden lg:flex flex-col gap-5 max-h-screen overflow-y-scroll scrollbar-none pt-5">
+    <div className="col-span-3 flex-col gap-5 max-h-screen overflow-y-scroll scrollbar-none pt-5">
       <div className="bg-white p-6 rounded-lg">
         <div className="w-full">
           <div className="flex items-center justify-between">
@@ -172,5 +197,3 @@ const RightSidebar = () => {
     </div>
   );
 };
-
-export default RightSidebar;

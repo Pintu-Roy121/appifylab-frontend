@@ -6,16 +6,25 @@ import { PostCard } from "./postCard";
 async function getPosts() {
   const token = (await cookies()).get("token")?.value;
   const url = process.env.NEXT_PUBLIC_SERVER_API_URL + "/api/v1/post";
-  const response = await axios({
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token,
-      cache: "no-store",
-    },
-  });
-  if (!response?.data.success) throw new Error("Failed to load posts");
-  return response.data ?? {};
+  try {
+    const response = await axios({
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+        cache: "no-store",
+      },
+    });
+    if (!response?.data.success) {
+      throw new Error("Failed to load posts");
+    }
+    // toast.success(response?.data?.message);
+    return response.data ?? {};
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      // toast.error(err.response?.data?.message);
+    }
+  }
 }
 
 const AllNewsFeed = async () => {

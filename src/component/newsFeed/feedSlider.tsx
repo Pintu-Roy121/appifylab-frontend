@@ -31,6 +31,15 @@ const storiesData = [
       "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=80",
     name: "Ryan Roslansky",
     avatarUrl: "https://i.pravatar.cc/80?img=12",
+    // showArrow: true,
+  },
+  {
+    id: "4",
+    type: "story",
+    backgroundUrl:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=80",
+    name: "Ryan Roslansky",
+    avatarUrl: "https://i.pravatar.cc/80?img=12",
     showArrow: true,
   },
 ];

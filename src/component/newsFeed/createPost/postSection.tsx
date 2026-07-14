@@ -6,6 +6,7 @@ import { BiCalendar, BiPencil, BiSend, BiVideo } from "react-icons/bi";
 import { FaFileImage } from "react-icons/fa";
 import { FiFileText } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
+import { toast } from "react-toastify";
 
 const PostSection = () => {
   const [text, setText] = useState("");
@@ -62,7 +63,12 @@ const PostSection = () => {
         },
       });
       if (response?.data?.success) {
+        toast.success(response?.data?.message);
         router.push("/");
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message);
       }
     } finally {
       setSubmitting(false);
@@ -74,7 +80,7 @@ const PostSection = () => {
     <div className="bg-white p-5 rounded-lg">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-xl rounded-2xl bg-white"
+        className="w-full max-w-full rounded-2xl bg-white"
       >
         <div className="flex items-start gap-3">
           <img

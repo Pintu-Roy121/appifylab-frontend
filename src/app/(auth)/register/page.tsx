@@ -1,12 +1,13 @@
 "use client";
 
-import GoogleIcon from "@/utils/googleIcon";
 import Field from "@/utils/inputField";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { toast, ToastContainer } from "react-toastify";
 
 type FormErrors = Partial<
   Record<
@@ -92,15 +93,17 @@ export default function RegisterPage() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       if (response?.data?.success) {
-        localStorage.setItem("token", response?.data?.data?.accessToken);
-        localStorage.setItem(
-          "user",
-          JSON.stringify(response?.data?.data?.data),
-        );
+        // localStorage.setItem("token", response?.data?.data?.accessToken);
+        // localStorage.setItem(
+        //   "user",
+        //   JSON.stringify(response?.data?.data?.data),
+        // );
+        toast.success("Register Successful!");
         router.push("/login");
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message);
         setError(err.response?.data?.message);
       } else {
         setError("Invalid Credential!");
@@ -114,6 +117,7 @@ export default function RegisterPage() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden overflow-y-scroll bg-[#F2F3F7]">
+      <ToastContainer position="top-right" />
       {/* Top edge bar */}
       <div className="absolute inset-x-0 top-0 h-[6px] bg-[#101828]" />
 
@@ -159,7 +163,8 @@ export default function RegisterPage() {
               type="button"
               className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white py-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              <GoogleIcon />
+              {/* <GoogleIcon /> */}
+              <FcGoogle className="text-xl" />
               Register with google
             </button>
 

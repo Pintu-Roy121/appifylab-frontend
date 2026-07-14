@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 type UsePostReturn<TResponse, TPayload> = {
   data: TResponse | null;
@@ -39,8 +40,9 @@ const usePost = <TResponse = unknown, TPayload = unknown>(
 
       setData(response.data);
       return response.data;
-    } catch (err) {
+    } catch (err: any) {
       const axiosError = err as AxiosError;
+      toast.error(err?.response?.data?.message);
       setError(axiosError);
       throw axiosError;
     } finally {

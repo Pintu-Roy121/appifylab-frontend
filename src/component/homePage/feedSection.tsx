@@ -6,7 +6,7 @@ const FeedSection = () => {
   return (
     <div
       id="feed-section"
-      className="col-span-6 flex flex-col gap-5 max-h-screen overflow-y-scroll scrollbar-none pt-5"
+      className="col-span-full lg:col-span-6 flex flex-col gap-5 max-h-screen overflow-y-scroll scrollbar-none pt-5"
     >
       <FeedSlider />
       <PostSection />

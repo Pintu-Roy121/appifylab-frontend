@@ -50,17 +50,23 @@ export default function UserNavMenu({
   }, []);
 
   return (
-    <div className="flex items-center gap-5">
-      <IconWithBadge icon={<BiHome className="text-2xl text-gray-500" />} />
+    <div className="flex items-center gap-2 lg:gap-5">
       <IconWithBadge
-        icon={<HiOutlineUserGroup className="text-2xl text-gray-500" />}
+        icon={<BiHome className="text-lg lg:text-2xl text-gray-500" />}
       />
       <IconWithBadge
-        icon={<FaRegBell className="text-2xl text-gray-500" />}
+        icon={
+          <HiOutlineUserGroup className="text-lg lg:text-2xl text-gray-500" />
+        }
+      />
+      <IconWithBadge
+        icon={<FaRegBell className="text-lg lg:text-2xl text-gray-500" />}
         count={notificationCount}
       />
       <IconWithBadge
-        icon={<LuMessageCircleMore className="text-2xl text-gray-500" />}
+        icon={
+          <LuMessageCircleMore className="text-lg lg:text-2xl text-gray-500" />
+        }
         count={messageCount}
       />
 

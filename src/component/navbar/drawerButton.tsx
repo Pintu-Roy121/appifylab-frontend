@@ -1,3 +1,30 @@
+"use client";
+
+import { useState } from "react";
+import { BiMenu } from "react-icons/bi";
+import Drawer from "../homePage/drawer";
+
+export default function LeftDrawerButton(children: any) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setOpen(true)}>
+        <BiMenu className="text-4xl text-blue-500 mt-3 cursor-pointer block lg:hidden" />
+      </button>
+
+      <Drawer
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        className={`fixed left-0 top-0 z-50 h-screen w-80 bg-white shadow-2xl transition-transform duration-300 ease-in-out
+${open ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <LeftSidebar />
+      </Drawer>
+    </div>
+  );
+}
+
 import Link from "next/link";
 import { AiOutlinePlayCircle } from "react-icons/ai";
 import {
@@ -49,7 +76,7 @@ const sidebarData = [
 
 const LeftSidebar = () => {
   return (
-    <div className="col-span-3 hidden lg:flex flex-col gap-5 max-h-screen overflow-y-scroll scrollbar-none pt-5">
+    <div className="col-span-3 flex-col gap-5 max-h-screen overflow-y-scroll scrollbar-none pt-5">
       <div className="bg-white p-5 rounded-lg">
         <h2 className="mb-4 px-2 text-lg font-bold text-slate-900">Explore</h2>
         <div className="space-y-1">
@@ -97,5 +124,3 @@ const LeftSidebar = () => {
     </div>
   );
 };
-
-export default LeftSidebar;

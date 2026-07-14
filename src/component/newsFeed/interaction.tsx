@@ -71,9 +71,10 @@ export default function EngagementBar({
     triggerPostComment();
   }, [commentPostId]);
 
-  const { trigger: createCommentTrigger } = usePost<any, any>(
-    "/api/v1/comment/create",
-  );
+  const { error: commentError, trigger: createCommentTrigger } = usePost<
+    any,
+    any
+  >("/api/v1/comment/create");
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setCommentPostId(post?._id);
@@ -109,7 +110,7 @@ export default function EngagementBar({
     // setText("");
   };
 
-  const { trigger: createLikeTrigger } = usePost<any, any>(
+  const { error: likeError, trigger: createLikeTrigger } = usePost<any, any>(
     "/api/v1/post-like/create",
   );
 

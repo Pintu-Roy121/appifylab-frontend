@@ -3,10 +3,13 @@ import LeftSidebar from "@/component/homePage/leftSidebar";
 import RightSidebar from "@/component/homePage/rightSidebar";
 import NavBar from "@/component/navbar/navbar";
 import ProtectedRoute from "@/component/protectedRoute/protectedRoute";
+import { ToastContainer } from "react-toastify";
 
 export default function Home() {
   return (
     <ProtectedRoute>
+      <ToastContainer position="top-right" />
+
       <main className="bg-gray-200">
         <NavBar />
         <div className="w-full flex justify-center mt-18">

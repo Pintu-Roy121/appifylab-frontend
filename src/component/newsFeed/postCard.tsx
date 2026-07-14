@@ -1,7 +1,5 @@
 import { Post } from "@/interfaces/interface";
 import { timeAgo } from "@/utils/timeAgo";
-import axios from "axios";
-import { cookies } from "next/headers";
 import { CgMoreVertical } from "react-icons/cg";
 import EngagementBar from "./interaction";
 
@@ -9,26 +7,8 @@ export type TProps = {
   post: Post;
 };
 
-async function getPosts(id: string) {
-  const token = (await cookies()).get("token")?.value;
-  const url =
-    process.env.NEXT_PUBLIC_SERVER_API_URL + `/api/v1/post-like/${id}`;
-  const response = await axios({
-    url,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token,
-      cache: "no-store",
-    },
-  });
-  if (!response?.data.success) throw new Error("Failed to load posts");
-  return response.data ?? {};
-}
-
 export const PostCard = async (PropsPost: TProps) => {
   const { post } = PropsPost;
-  // const { data, isLoading, error, refetch } = useGet<IPostLike[]>("/users");
-  const { data: postLikes } = await getPosts(post._id);
 
   return (
     <div className="w-full overflow-hidden rounded-xl bg-white shadow-[0_1px_3px_rgba(16,24,40,0.08)]">
@@ -60,7 +40,7 @@ export const PostCard = async (PropsPost: TProps) => {
 
       <div className="flex items-start justify-between p-5">
         <img
-          src={post?.image ?? "./images/recommend4.png"}
+          src={post?.image || "./images/recommend4.png"}
           alt="Post attachment"
           className="block w-full rounded-lg max-h-100 object-cover"
         />
